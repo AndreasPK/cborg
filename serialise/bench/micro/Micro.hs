@@ -41,7 +41,7 @@ benchmarks =
       , bench "aeson generic" (whnf perfEncodeAesonGeneric tstdata)
       , bench "aeson TH"      (whnf perfEncodeAesonTH      tstdata)
       , bench "read/show"     (whnf perfEncodeReadShow     tstdata)
-      , bench "store"         (whnf perfEncodeStore        tstdata)
+
       , bench "cbor"          (whnf perfEncodeCBOR         tstdata)
       ]
   , bgroup "decoding" $ deepseq (tstdataB, tstdataC, tstdataA, tstdataS,
@@ -51,7 +51,7 @@ benchmarks =
       , bench "aeson generic" (whnf perfDecodeAesonGeneric tstdataA)
       , bench "aeson TH"      (whnf perfDecodeAesonTH      tstdataA)
       , bench "read/show"     (whnf perfDecodeReadShow     tstdataS)
-      , bench "store"         (whnf perfDecodeStore        tstdataP)
+
       , bench "cbor"          (whnf perfDecodeCBOR         tstdataR)
       ]
   , bgroup "decoding + deepseq" $ deepseq (tstdataB, tstdataC, tstdataA,
@@ -61,7 +61,7 @@ benchmarks =
       , bench "aeson generic" (nf perfDecodeAesonGeneric tstdataA)
       , bench "aeson TH"      (nf perfDecodeAesonTH      tstdataA)
       , bench "read/show"     (nf perfDecodeReadShow     tstdataS)
-      , bench "store"         (nf perfDecodeStore        tstdataP)
+
       , bench "cbor"          (nf perfDecodeCBOR         tstdataR)
       ]
   , env lowlevelPtrEnv $ \ptr ->
@@ -78,7 +78,7 @@ benchmarks =
     !tstdataC = combineChunks $ Micro.PkgCereal.serialise tstdata
     !tstdataA = combineChunks $ Micro.PkgAesonTH.serialise tstdata
     !tstdataS = combineChunks $ Micro.ReadShow.serialise tstdata
-    !tstdataP = Micro.PkgStore.serialise tstdata
+
     !tstdataR = combineChunks $ Micro.CBOR.serialise tstdata
 
     -- Encoding tests
@@ -87,7 +87,7 @@ benchmarks =
     perfEncodeAesonGeneric = BS.length . Micro.PkgAesonGeneric.serialise
     perfEncodeAesonTH      = BS.length . Micro.PkgAesonTH.serialise
     perfEncodeReadShow     = BS.length . Micro.ReadShow.serialise
-    perfEncodeStore        = B.length  . Micro.PkgStore.serialise
+
     perfEncodeCBOR         = BS.length . Micro.CBOR.serialise
 
     -- Decoding tests
@@ -96,7 +96,7 @@ benchmarks =
     perfDecodeAesonGeneric = Micro.PkgAesonGeneric.deserialise
     perfDecodeAesonTH      = Micro.PkgAesonTH.deserialise
     perfDecodeReadShow     = Micro.ReadShow.deserialise
-    perfDecodeStore        = Micro.PkgStore.deserialise
+
     perfDecodeCBOR         = Micro.CBOR.deserialise
 
     -- | Allocate an 8-byte pointer, write a 64-bit word into
