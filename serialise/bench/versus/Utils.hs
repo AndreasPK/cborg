@@ -42,7 +42,7 @@ copyHackageIndex = do
 
   -- Create the data dir, and copy the index.
   -- We do not try to create the 'bench' directory since it should exist.
-  createDirectoryIfMissing Yes dataDir
+  createDirectoryIfMissing True dataDir
   exists <- doesFileExist dest
   when (not exists) $ do
     notice "Copying hackage index" (copyFile hackageIndex dest)
