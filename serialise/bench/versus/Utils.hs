@@ -42,7 +42,7 @@ copyHackageIndex = do
 
   -- Create the data dir, and copy the index.
   -- We do not try to create the 'bench' directory since it should exist.
-  createDirectoryIfMissing False dataDir
+  createDirectoryIfMissing Yes dataDir
   exists <- doesFileExist dest
   when (not exists) $ do
     notice "Copying hackage index" (copyFile hackageIndex dest)
@@ -86,7 +86,7 @@ prepBenchmarkFiles = do
   write "binary.bin"     (PkgBinary.serialise _pkgs20k)
   write "cereal.bin"     (PkgCereal.serialise _pkgs20k)
   write "cbor.bin"       (CBOR.serialise      _pkgs20k)
-  writeS "store.bin"     (PkgStore.serialise  _pkgs20k)
+  -- writeS "store.bin"     (PkgStore.serialise  _pkgs20k)
 --write "cbor-small.bin" (CBOR.serialise      _pkgs1k)
 
   -- And before we finish: do a garbage collection to clean up anything left

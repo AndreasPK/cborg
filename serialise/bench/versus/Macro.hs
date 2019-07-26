@@ -112,10 +112,10 @@ benchmarks =
     perfDecodeReadShow     = ReadShow.deserialise
     perfDecodeCBOR        = CBOR.deserialise
 
-    perfDecodeStore :: B.ByteString -> [Types.GenericPackageDescription]
-    perfDecodeStore = PkgStore.deserialise
-    perfEncodeStore :: [Types.GenericPackageDescription] -> Int
-    perfEncodeStore = B.length . PkgStore.serialise
+    -- perfDecodeStore :: B.ByteString -> [Types.GenericPackageDescription]
+    -- perfDecodeStore = PkgStore.deserialise
+    -- perfEncodeStore :: [Types.GenericPackageDescription] -> Int
+    -- perfEncodeStore = B.length . PkgStore.serialise
 
     -- Convert any lazy ByteString to ByteString lazy bytestring
     -- that have only single chunk.

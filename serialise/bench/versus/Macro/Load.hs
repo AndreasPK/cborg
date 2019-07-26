@@ -19,6 +19,7 @@ import Data.Tree as Tree (Tree(..), flatten)
 import Data.Array (Array, accumArray, bounds, Ix(inRange), (!))
 import Data.Bits
 import Control.Monad
+import Control.Monad.Fail as MF
 import Control.Exception
 import qualified Data.ByteString.Lazy.Char8 as BS
 import System.FilePath (normalise, splitDirectories, takeExtension)
@@ -151,6 +152,8 @@ instance Monad ParseResult where
         ParseOk ws x >>= f = case f x of
                                ParseFailed err -> ParseFailed err
                                ParseOk ws' x' -> ParseOk (ws'++ws) x'
+
+instance MonadFail ParseResult where
         fail s = ParseFailed (FromString s Nothing)
 
 catchParseError :: ParseResult a -> (PError -> ParseResult a)
@@ -1200,7 +1203,7 @@ instance Text KnownExtension where
         Just ke ->
             return ke
         Nothing ->
-            fail ("Can't parse " ++ show extension ++ " as KnownExtension")
+            MF.fail ("Can't parse " ++ show extension ++ " as KnownExtension")
 
 classifyExtension :: String -> Extension
 classifyExtension string
@@ -1844,6 +1847,9 @@ instance Monad m => Monad (StT s m) where
                         (a,s') <- f s
                         runStT (g a) s'
 
+instance MonadFail m => MonadFail (StT s m) where
+    fail s = lift (MF.fail s)
+
 get :: Monad m => StT s m s
 get = StT $ \s -> return (s, s)
 
@@ -1986,7 +1992,7 @@ parsePackageDescription file = do
         `catchParseError` \parseError -> case parseError of
         TabsError _   -> parseFail parseError
         _ | versionOk -> parseFail parseError
-          | otherwise -> fail message
+          | otherwise -> MF.fail message
       where versionOk = cabalVersionNeeded <= cabalVersion
             message   = "This package requires at least Cabal version "
                      ++ display cabalVersionNeeded
@@ -2296,7 +2302,7 @@ parsePackageDescription file = do
     checkCondTreeFlags definedFlags ct = do
         let fv = nub $ freeVars ct
         unless (all (`elem` definedFlags) fv) $
-            fail $ "These flags are used without having been defined: "
+            MF.fail $ "These flags are used without having been defined: "
                 ++ intercalate ", " [ n | FlagName n <- fv \\ definedFlags ]
 
     findIndentTabs :: String -> [(Int,Int)]
